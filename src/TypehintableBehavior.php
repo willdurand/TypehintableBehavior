@@ -16,7 +16,7 @@ class TypehintableBehavior extends Behavior
 {
     private $refFKs		= array();
 
-	private $crossFKs	= array();
+    private $crossFKs	= array();
 
     public function objectFilter(&$script)
     {
@@ -28,8 +28,8 @@ class TypehintableBehavior extends Behavior
             $this->refFKs[$refFK->getTable()->getName()] = $refFK->getRefPhpName() ?: $refFK->getTable()->getPhpName();
         }
 
-		foreach ($this->getTable()->getCrossFks() as $fkList) {
-			list($refFK, $crossFK) = $fkList;
+        foreach ($this->getTable()->getCrossFks() as $fkList) {
+            list($refFK, $crossFK) = $fkList;
             $this->crossFKs[$crossFK->getForeignTable()->getName()] = $crossFK->getRefPhpName() ?: $crossFK->getForeignTable()->getPhpName();
         }
 
@@ -43,52 +43,52 @@ class TypehintableBehavior extends Behavior
 
     protected function getColumnRefAdder($columnName)
     {
-		return 'add' . $this->refFKs[$columnName];
+        return 'add' . $this->refFKs[$columnName];
     }
 
-	protected function getColumnRefRemover($columnName)
-	{
-		return 'remove' . $this->refFKs[$columnName];
-	}
+    protected function getColumnRefRemover($columnName)
+    {
+        return 'remove' . $this->refFKs[$columnName];
+    }
 
     protected function getColumnCrossAdder($columnName)
     {
-		return 'add' . $this->crossFKs[$columnName];
+        return 'add' . $this->crossFKs[$columnName];
     }
 
     protected function getColumnCrossRemover($columnName)
     {
-		return 'remover' . $this->crossFKs[$columnName];
+        return 'remover' . $this->crossFKs[$columnName];
     }
 
     protected function filter(&$script)
     {
         foreach ($this->getParameters() as $columnName => $typehint) {
-			if ($this->getTable()->containsColumn($columnName)) {
-				$funcName = $this->getColumnSetter($columnName);
-				$this->filterFunction($funcName, $typehint, $script);
-			} elseif (array_key_exists($columnName, $this->refFKs)) {
-				$funcName = $this->getColumnRefAdder($columnName);
-				$this->filterFunction($funcName, $typehint, $script);
+            if ($this->getTable()->containsColumn($columnName)) {
+                $funcName = $this->getColumnSetter($columnName);
+                $this->filterFunction($funcName, $typehint, $script);
+            } elseif (array_key_exists($columnName, $this->refFKs)) {
+                $funcName = $this->getColumnRefAdder($columnName);
+                $this->filterFunction($funcName, $typehint, $script);
 
-				$funcName = $this->getColumnRefRemover($columnName);
-				$this->filterFunction($funcName, $typehint, $script);
-			} elseif (array_key_exists($columnName, $this->crossFKs)) {
-				$funcName = $this->getColumnCrossAdder($columnName);
-				$this->filterFunction($funcName, $typehint, $script);
+                $funcName = $this->getColumnRefRemover($columnName);
+                $this->filterFunction($funcName, $typehint, $script);
+            } elseif (array_key_exists($columnName, $this->crossFKs)) {
+                $funcName = $this->getColumnCrossAdder($columnName);
+                $this->filterFunction($funcName, $typehint, $script);
 
-				$funcName = $this->getColumnCrossRemover($columnName);
-				$this->filterFunction($funcName, $typehint, $script);
-			}
-		}
-	}
+                $funcName = $this->getColumnCrossRemover($columnName);
+                $this->filterFunction($funcName, $typehint, $script);
+            }
+        }
+    }
 
-	protected function filterFunction($functionName, $typehint, &$script)
-	{
-		$pattern     = sprintf('#function %s\(#', $functionName);
-		$replacement = sprintf('function %s(%s ', $functionName, $this->fixTypehint($typehint));
-		$script      = preg_replace($pattern, $replacement, $script);
-	}
+    protected function filterFunction($functionName, $typehint, &$script)
+    {
+        $pattern     = sprintf('#function %s\(#', $functionName);
+        $replacement = sprintf('function %s(%s ', $functionName, $this->fixTypehint($typehint));
+        $script      = preg_replace($pattern, $replacement, $script);
+    }
 
     private function fixTypehint($typehint)
     {
