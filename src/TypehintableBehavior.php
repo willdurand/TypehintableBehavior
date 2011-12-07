@@ -46,9 +46,19 @@ class TypehintableBehavior extends Behavior
 		return 'add' . $this->refFKs[$columnName];
     }
 
+	protected function getColumnRefRemover($columnName)
+	{
+		return 'remove' . $this->refFKs[$columnName];
+	}
+
     protected function getColumnCrossAdder($columnName)
     {
 		return 'add' . $this->crossFKs[$columnName];
+    }
+
+    protected function getColumnCrossRemover($columnName)
+    {
+		return 'remover' . $this->crossFKs[$columnName];
     }
 
     protected function filter(&$script)
@@ -60,8 +70,14 @@ class TypehintableBehavior extends Behavior
 			} elseif (array_key_exists($columnName, $this->refFKs)) {
 				$funcName = $this->getColumnRefAdder($columnName);
 				$this->filterFunction($funcName, $typehint, $script);
+
+				$funcName = $this->getColumnRefRemover($columnName);
+				$this->filterFunction($funcName, $typehint, $script);
 			} elseif (array_key_exists($columnName, $this->crossFKs)) {
 				$funcName = $this->getColumnCrossAdder($columnName);
+				$this->filterFunction($funcName, $typehint, $script);
+
+				$funcName = $this->getColumnCrossRemover($columnName);
 				$this->filterFunction($funcName, $typehint, $script);
 			}
 		}
