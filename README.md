@@ -72,12 +72,29 @@ It will generate the following code in the `BaseUser` class:
 ``` php
 <?php
 
-public function setRoles(array $roles)
+// ...
+
+public function setRoles(array $v)
 {
+    if ($this->roles_unserialized !== $v) {
+        $this->roles_unserialized = $v;
+        $this->roles = '| ' . implode(' | ', $v) . ' |';
+        $this->modifiedColumns[] = UserPeer::ROLES;
+    }
+
+    return $this;
 }
 
 public function addGroup(\FOS\UserBundle\Model\GroupInterface $group)
 {
+    if ($this->collGroups === null) {
+        $this->initGroups();
+    }
+    if (!$this->collGroups->contains($group)) { // only add it if the **same** object is not already associated
+        $this->doAddGroup($group);
+
+        $this->collGroups[]= $group;
+    }
 }
 ```
 
