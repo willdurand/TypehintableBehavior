@@ -85,9 +85,18 @@ class TypehintableBehavior extends Behavior
 
     protected function filterFunction($functionName, $typehint, &$script)
     {
-        $pattern     = sprintf('#function %s\(#', $functionName);
-        $replacement = sprintf('function %s(%s ', $functionName, $this->fixTypehint($typehint));
-        $script      = preg_replace($pattern, $replacement, $script);
+        $patternWithTypehint    = sprintf('#function %s\([A-Za-z]+#', $functionName);
+        $patternWithoutTypehint = sprintf('#function %s\(#', $functionName);
+
+        if (preg_match($patternWithTypehint, $script)) {
+            $pattern     = $patternWithTypehint;
+            $replacement = sprintf('function %s(%s', $functionName, $this->fixTypehint($typehint));
+        } else {
+            $pattern     = $patternWithoutTypehint;
+            $replacement = sprintf('function %s(%s ', $functionName, $this->fixTypehint($typehint));
+        }
+
+        $script = preg_replace($pattern, $replacement, $script);
     }
 
     private function fixTypehint($typehint)
