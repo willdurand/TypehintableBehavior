@@ -18,6 +18,8 @@ class TypehintableBehavior extends Behavior
 
     private $crossFKs	= array();
 
+    private $fks	    = array();
+
     public function objectFilter(&$script)
     {
         if (0 === count($this->getParameters())) {
@@ -33,12 +35,21 @@ class TypehintableBehavior extends Behavior
             $this->crossFKs[$crossFK->getForeignTable()->getName()] = $crossFK->getRefPhpName() ?: $crossFK->getForeignTable()->getPhpName();
         }
 
+        foreach ($this->getTable()->getForeignKeys() as $fk) {
+            $this->fks[$fk->getForeignTableName()] = $fk->getForeignTable()->getPhpName();
+        }
+
         return $this->filter($script);
     }
 
     protected function getColumnSetter($columnName)
     {
         return 'set' . $this->getTable()->getColumn($columnName)->getPhpName();
+    }
+
+    protected function getColumnFkSetter($columnName)
+    {
+        return 'set' . $this->fks[$columnName];
     }
 
     protected function getColumnRefAdder($columnName)
@@ -78,6 +89,9 @@ class TypehintableBehavior extends Behavior
                 $this->filterFunction($funcName, $typehint, $script);
 
                 $funcName = $this->getColumnCrossRemover($columnName);
+                $this->filterFunction($funcName, $typehint, $script);
+            } elseif (array_key_exists($columnName, $this->fks)) {
+                $funcName = $this->getColumnFkSetter($columnName);
                 $this->filterFunction($funcName, $typehint, $script);
             }
         }
