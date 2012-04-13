@@ -10,6 +10,6 @@
         }
     ],
     "require": {
-        "propel/propel1": "dev-master"
+        "propel/propel1": "1.6.*"
     }
 }
