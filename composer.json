@@ -1,6 +1,8 @@
 {
     "name": "willdurand/propel-typehintable-behavior",
     "description": "Insane Propel behavior that helps you to be compliant with third-party interfaces by adding type hint to generated methods.",
+    "keywords": [ "propel", "behavior", "typehint" ],
+    "license": "MIT",
     "authors": [
         {
             "name": "William DURAND",
@@ -8,6 +10,6 @@
         }
     ],
     "require": {
-
+        "propel/propel1": "dev-master"
     }
 }
