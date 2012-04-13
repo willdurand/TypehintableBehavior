@@ -1,0 +1,13 @@
+{
+    "name": "willdurand/propel-typehintable-behavior",
+    "description": "Insane Propel behavior that helps you to be compliant with third-party interfaces by adding type hint to generated methods.",
+    "authors": [
+        {
+            "name": "William DURAND",
+            "email": "william.durand1@gmail.com"
+        }
+    ],
+    "require": {
+
+    }
+}
