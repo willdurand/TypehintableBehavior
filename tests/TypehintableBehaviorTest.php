@@ -8,20 +8,12 @@
  * @license    MIT License
  */
 
-$propeldir = dirname(__FILE__) . '/../../../propel';
-require_once $propeldir . '/test/tools/helpers/bookstore/BookstoreTestBase.php';
-require_once $propeldir . '/generator/lib/util/PropelQuickBuilder.php';
-require_once $propeldir . '/runtime/lib/Propel.php';
-
-require_once __DIR__ . '/../src/TypehintableBehavior.php';
-
 /**
  * Tests for TypehintableBehaviorTest class
  *
- * @author     William Durand <william.durand1@gmail.com>
- * @package    generator.behavior
+ * @author William Durand <william.durand1@gmail.com>
  */
-class TypehintableBehaviorTest extends PHPUnit_Framework_TestCase
+class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
@@ -64,7 +56,7 @@ class TypehintableBehaviorTest extends PHPUnit_Framework_TestCase
 </database>
 EOF;
             $builder = new PropelQuickBuilder();
-            $config = $builder->getConfig();
+            $config  = $builder->getConfig();
             $config->setBuildProperty('behavior.typehintable.class', __DIR__.'/../src/TypehintableBehavior');
             $builder->setConfig($config);
             $builder->setSchema($schema);

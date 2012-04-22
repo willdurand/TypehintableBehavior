@@ -1,6 +1,8 @@
 TypehintableBehavior
 ====================
 
+[![Build Status](https://secure.travis-ci.org/willdurand/TypehintableBehavior.png)](http://travis-ci.org/willdurand/TypehintableBehavior)
+
 The **TypehintableBehavior** behavior allows you to add typehints to generated methods (in _Base_ classes).
 
 
