@@ -20,6 +20,27 @@ class TypehintableBehavior extends Behavior
 
     private $fks	    = array();
 
+    private $nullables  = array();
+
+    public function addParameter($attribute)
+    {
+        $attribute = array_change_key_case($attribute, CASE_LOWER);
+        $this->parameters[$attribute['name']] = $attribute['value'];
+
+        if (isset($attribute['nullable']) && true === $this->booleanValue($attribute['nullable'])) {
+            $this->nullables[] = $attribute['name'];
+        }
+    }
+
+    public function objectMethods($builder)
+    {
+        foreach ($this->getParameters() as $class) {
+            if ('array' !== $class) {
+                $builder->declareClass($class);
+            }
+        }
+    }
+
     public function objectFilter(&$script)
     {
         if (0 === count($this->getParameters())) {
@@ -75,29 +96,31 @@ class TypehintableBehavior extends Behavior
     protected function filter(&$script)
     {
         foreach ($this->getParameters() as $columnName => $typehint) {
+            $isNullable = in_array($columnName, $this->nullables);
+
             if ($this->getTable()->containsColumn($columnName)) {
                 $funcName = $this->getColumnSetter($columnName);
-                $this->filterFunction($funcName, $typehint, $script);
+                $this->filterFunction($funcName, $typehint, $isNullable, $script);
             } elseif (array_key_exists($columnName, $this->refFKs)) {
                 $funcName = $this->getColumnRefAdder($columnName);
-                $this->filterFunction($funcName, $typehint, $script);
+                $this->filterFunction($funcName, $typehint, $isNullable, $script);
 
                 $funcName = $this->getColumnRefRemover($columnName);
-                $this->filterFunction($funcName, $typehint, $script);
+                $this->filterFunction($funcName, $typehint, $isNullable, $script);
             } elseif (array_key_exists($columnName, $this->crossFKs)) {
                 $funcName = $this->getColumnCrossAdder($columnName);
-                $this->filterFunction($funcName, $typehint, $script);
+                $this->filterFunction($funcName, $typehint, $isNullable, $script);
 
                 $funcName = $this->getColumnCrossRemover($columnName);
-                $this->filterFunction($funcName, $typehint, $script);
+                $this->filterFunction($funcName, $typehint, $isNullable, $script);
             } elseif (array_key_exists($columnName, $this->fks)) {
                 $funcName = $this->getColumnFkSetter($columnName);
-                $this->filterFunction($funcName, $typehint, $script);
+                $this->filterFunction($funcName, $typehint, $isNullable, $script);
             }
         }
     }
 
-    protected function filterFunction($functionName, $typehint, &$script)
+    protected function filterFunction($functionName, $typehint, $isNullable, &$script)
     {
         $patternWithTypehint    = sprintf('#function %s\([A-Za-z]+#', $functionName);
         $patternWithoutTypehint = sprintf('#function %s\(#', $functionName);
@@ -111,14 +134,25 @@ class TypehintableBehavior extends Behavior
         }
 
         $script = preg_replace($pattern, $replacement, $script);
+
+        if (true === $isNullable) {
+            $pattern     = sprintf('#(%s\$[A-Za-z]+)\)#', preg_quote($replacement));
+            $replacement = sprintf('$1 = null)');
+            $script      = preg_replace($pattern, $replacement, $script);
+        }
     }
 
     private function fixTypehint($typehint)
     {
-        if ('array' === $typehint || '\\' === substr($typehint, 0, 1)) {
-            return $typehint;
+        if ('array' !== $typehint) {
+            try {
+                $reflClass = new \ReflectionClass($typehint);
+                $typehint  = $reflClass->getShortName();
+            } catch (Exception $e) {
+                // class not available at this time, too bad, we use the full qualified class name
+            }
         }
 
-        return '\\' . $typehint;
+        return $typehint;
     }
 }

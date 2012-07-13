@@ -32,9 +32,13 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
     <table name="typehinted_user">
         <column name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <column name="name" type="VARCHAR" size="32"/>
+        <column name="catched_exception" type="OBJECT" />
+        <column name="foo" type="OBJECT" />
 
         <behavior name="typehintable">
-            <parameter name="group" value="\TypehintedGroup" />
+            <parameter name="group" value="TypehintedGroup" />
+            <parameter name="catched_exception" value="Exception" nullable="true" />
+            <parameter name="foo" value="TypehintedUser" nullable="true" />
         </behavior>
     </table>
 
@@ -68,6 +72,7 @@ EOF;
     {
         $o = new TypehintedObject();
         $o->setRoles(array());
+        $this->assertTrue(true);
     }
 
     /**
@@ -103,8 +108,8 @@ EOF;
         $g = new TypehintedGroup();
 
         $u->addTypehintedGroup($g);
+        $this->assertTrue(true);
     }
-
 
     /**
      * @expectedException PHPUnit_Framework_Error
@@ -115,5 +120,19 @@ EOF;
         $g = new TypehintedObject();
 
         $u->addTypehintedGroup($g);
+    }
+
+    public function testTypehintIsNullable()
+    {
+        $u = new TypehintedUser();
+        $u->setCatchedException(null);
+        $this->assertTrue(true);
+    }
+
+    public function testTypehintIsNullableAndEarlyClassUsage()
+    {
+        $u = new TypehintedUser();
+        $u->setFoo(null);
+        $this->assertTrue(true);
     }
 }

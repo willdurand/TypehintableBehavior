@@ -32,6 +32,12 @@ Just add the following XML tag in your `schema.xml` file:
 If you fill in a column name as parameter's name, the typehint will be added to the corresponding setter methods (`setRoles()` for instance).
 If you fill in a related table name as parameter's name, the typehint will be added to the adder/remover methods (`addGroup()`, `removeGroup()` for instance).
 
+You can also specify nullable method signatures (`setFoo(Foo $foo = null)`):
+
+``` xml
+<parameter name="RELATED_TABLE_NAME" value="TYPEHINT" nullable="true" />
+```
+
 
 Example
 -------
