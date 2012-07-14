@@ -100,7 +100,7 @@ class TypehintableBehavior extends Behavior
         foreach ($this->getParameters() as $columnName => $typehint) {
             $isNullable = in_array($columnName, $this->nullables);
 
-            if ($this->getTable()->containsColumn($columnName)) {
+            if ($this->getTable()->hasColumn($columnName)) {
                 $funcName = $this->getColumnSetter($columnName);
                 $this->filterFunction($funcName, $typehint, $isNullable, $script);
             } elseif (array_key_exists($columnName, $this->refFKs)) {
