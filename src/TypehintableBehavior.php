@@ -22,6 +22,8 @@ class TypehintableBehavior extends Behavior
 
     private $nullables  = array();
 
+    private $scalars    = array('array', 'callable');
+
     public function addParameter($attribute)
     {
         $attribute = array_change_key_case($attribute, CASE_LOWER);
@@ -35,7 +37,7 @@ class TypehintableBehavior extends Behavior
     public function objectMethods($builder)
     {
         foreach ($this->getParameters() as $class) {
-            if ('array' !== $class) {
+            if (!in_array($class, $this->scalars)) {
                 $builder->declareClass($class);
             }
         }
@@ -144,7 +146,7 @@ class TypehintableBehavior extends Behavior
 
     private function fixTypehint($typehint)
     {
-        if ('array' !== $typehint) {
+        if (!in_array($typehint, $this->scalars)) {
             try {
                 $reflClass = new \ReflectionClass($typehint);
                 $typehint  = $reflClass->getShortName();
