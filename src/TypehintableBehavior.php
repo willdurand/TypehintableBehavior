@@ -24,18 +24,12 @@ class TypehintableBehavior extends Behavior
 
     private $scalars    = array('array', 'callable');
 
-    public function addParameter($attribute)
-    {
-        $attribute = array_change_key_case($attribute, CASE_LOWER);
-        $this->parameters[$attribute['name']] = $attribute['value'];
-
-        if (isset($attribute['nullable']) && true === $this->booleanValue($attribute['nullable'])) {
-            $this->nullables[] = $attribute['name'];
-        }
-    }
-
     public function objectMethods($builder)
     {
+        foreach (explode(',', $this->getParameter('nullable_columns')) as $column) {
+            $this->nullables[] = trim($column);
+        }
+
         foreach ($this->getParameters() as $class) {
             if (!in_array($class, $this->scalars)) {
                 $builder->declareClass($class);

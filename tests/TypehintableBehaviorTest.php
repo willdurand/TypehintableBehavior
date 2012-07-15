@@ -15,10 +15,11 @@
  */
 class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
 {
+    private $schema;
+
     public function setUp()
     {
-        if (!class_exists('TypehintedObject')) {
-            $schema = <<<EOF
+        $this->schema = <<<EOF
 <database name="bookstore" defaultIdMethod="native">
     <table name="typehinted_object">
         <column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
@@ -29,6 +30,7 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
             <parameter name="roles" value="array" />
         </behavior>
     </table>
+
     <table name="typehinted_user">
         <column name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <column name="name" type="VARCHAR" size="32"/>
@@ -37,8 +39,10 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
 
         <behavior name="typehintable">
             <parameter name="typehinted_group" value="BaseTypehintedGroup" />
-            <parameter name="catched_exception" value="Exception" nullable="true" />
-            <parameter name="foo" value="TypehintedUser" nullable="true" />
+            <parameter name="catched_exception" value="Exception" />
+            <parameter name="foo" value="TypehintedUser" />
+
+            <parameter name="nullable_columns" value="foo, catched_exception" />
         </behavior>
     </table>
 
@@ -50,6 +54,7 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
     <table name="typehinted_user_group" isCrossRef="true">
         <column name="user_id" type="INTEGER" primaryKey="true"/>
         <column name="group_id" type="INTEGER" primaryKey="true"/>
+
         <foreign-key foreignTable="typehinted_user">
             <reference local="user_id" foreign="id"/>
         </foreign-key>
@@ -59,12 +64,14 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
     </table>
 </database>
 EOF;
+
+        if (!class_exists('TypehintedObject')) {
             $builder = new PropelQuickBuilder();
             $config  = $builder->getConfig();
             $config->setBuildProperty('behavior.typehintable.class', __DIR__.'/../src/TypehintableBehavior');
             $builder->setConfig($config);
-            $builder->setSchema($schema);
-            $con = $builder->build();
+            $builder->setSchema($this->schema);
+            $builder->build();
         }
     }
 
@@ -142,5 +149,13 @@ EOF;
         $u = new TypehintedUser();
         $u->setFoo(null);
         $this->assertTrue(true);
+    }
+
+    public function testSchemaIsValid()
+    {
+        $xml = new DOMDocument();
+        $xml->loadXML($this->schema);
+
+        $this->assertTrue($xml->schemaValidate(__DIR__ . '/../vendor/propel/propel1/generator/resources/xsd/database.xsd'));
     }
 }
