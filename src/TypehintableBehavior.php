@@ -92,7 +92,7 @@ class TypehintableBehavior extends Behavior
 
     protected function getColumnCrossRemover($columnName)
     {
-        return 'remover' . $this->crossFKs[$columnName];
+        return 'remove' . $this->crossFKs[$columnName];
     }
 
     protected function filter(&$script)

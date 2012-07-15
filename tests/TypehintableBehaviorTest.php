@@ -36,7 +36,7 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
         <column name="foo" type="OBJECT" />
 
         <behavior name="typehintable">
-            <parameter name="group" value="TypehintedGroup" />
+            <parameter name="typehinted_group" value="BaseTypehintedGroup" />
             <parameter name="catched_exception" value="Exception" nullable="true" />
             <parameter name="foo" value="TypehintedUser" nullable="true" />
         </behavior>
@@ -120,6 +120,14 @@ EOF;
         $g = new TypehintedObject();
 
         $u->addTypehintedGroup($g);
+    }
+
+    public function testTypehintOnManyToManyRelationRemover()
+    {
+        $ref = new ReflectionClass('TypehintedUser');
+        $parameters = $ref->getMethod('removeTypehintedGroup')->getParameters();
+
+        $this->assertEquals('BaseTypehintedGroup', $parameters[0]->getClass()->getName());
     }
 
     public function testTypehintIsNullable()
