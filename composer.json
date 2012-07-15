@@ -12,9 +12,6 @@
     "require": {
         "propel/propel1": "1.6.*"
     },
-    "require-dev": {
-        "propel/propel1": "dev-master"
-    },
     "autoload": {
         "classmap": ["src/"]
     }
