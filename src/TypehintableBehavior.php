@@ -26,8 +26,12 @@ class TypehintableBehavior extends Behavior
 
     public function objectMethods($builder)
     {
-        foreach (explode(',', $this->getParameter('nullable_columns')) as $column) {
-            $this->nullables[] = trim($column);
+        if (null !== $this->getParameter('nullable_columns')) {
+            foreach (explode(',', $this->getParameter('nullable_columns')) as $column) {
+                $this->nullables[] = trim($column);
+            }
+
+            unset($this->parameters['nullable_columns']);
         }
 
         foreach ($this->getParameters() as $class) {
