@@ -35,7 +35,7 @@ If you fill in a related table name as parameter's name, the typehint will be ad
 You can also specify nullable method signatures (`setFoo(Foo $foo = null)`):
 
 ``` xml
-<parameter name="RELATED_TABLE_NAME" value="TYPEHINT" nullable="true" />
+<parameter name="nullable_columns" value="COLUMN_NAME, RELATED_TABLE_NAME" />
 ```
 
 
