@@ -80,6 +80,8 @@ It will generate the following code in the `BaseUser` class:
 ``` php
 <?php
 
+use FOS\UserBundle\Model\GroupInterface;
+
 // ...
 
 public function setRoles(array $v)
@@ -93,7 +95,7 @@ public function setRoles(array $v)
     return $this;
 }
 
-public function addGroup(\FOS\UserBundle\Model\GroupInterface $group)
+public function addGroup(GroupInterface $group)
 {
     if ($this->collGroups === null) {
         $this->initGroups();
