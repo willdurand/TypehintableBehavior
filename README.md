@@ -5,15 +5,26 @@ TypehintableBehavior
 
 The **TypehintableBehavior** behavior allows you to add typehints to generated methods (in _Base_ classes).
 
+_This is experimental branch with support for the upcoming Propel2._
+
 
 Installation
 ------------
 
-Cherry-pick the `TypehintableBehavior.php` file is `src/`, put it somewhere,
-then add the following line to your `propel.ini` or `build.properties` configuration file:
+The easiest way is through [Composer](https://github.com/composer/composer). Just add the following requirement to your project's `composer.json`:
 
-``` ini
-propel.behavior.typehintable.class = path.to.TypehintableBehavior
+``` json
+{
+    "require": {
+        "willdurand/propel-typehintable-behavior": "~2.0@dev"
+    }
+}
+```
+
+Then call 
+
+``` bash
+$ php composer.phar install
 ```
 
 
