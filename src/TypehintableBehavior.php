@@ -7,6 +7,7 @@
  *
  * @license    MIT License
  */
+use Propel\Generator\Builder\Om\ObjectBuilder;
 use Propel\Generator\Model\Behavior;
 
 /**
@@ -28,15 +29,15 @@ class TypehintableBehavior extends Behavior
 
     private $scalars    = array('array', 'callable');
 
-    public function objectMethods($builder)
+    public function objectMethods(ObjectBuilder $builder)
     {
         if (null !== $this->getParameter('nullable_columns')) {
             foreach (explode(',', $this->getParameter('nullable_columns')) as $column) {
                 $this->nullables[] = trim($column);
             }
-
-            unset($this->parameters['nullable_columns']);
         }
+
+		unset($this->parameters['nullable_columns']);
 
         foreach ($this->getParameters() as $class) {
             if (!in_array($class, $this->scalars)) {
