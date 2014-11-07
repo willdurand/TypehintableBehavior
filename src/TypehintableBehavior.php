@@ -7,12 +7,17 @@
  *
  * @license    MIT License
  */
+use Propel\Generator\Model\Behavior;
 
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
 class TypehintableBehavior extends Behavior
 {
+	protected $parameters = array(
+		'nullable_columns' => null,
+	);
+
     private $refFKs		= array();
 
     private $crossFKs	= array();
@@ -51,8 +56,9 @@ class TypehintableBehavior extends Behavior
         }
 
         foreach ($this->getTable()->getCrossFks() as $fkList) {
-            list($refFK, $crossFK) = $fkList;
-            $this->crossFKs[$crossFK->getForeignTable()->getName()] = $crossFK->getRefPhpName() ?: $crossFK->getForeignTable()->getPhpName();
+			foreach ($fkList->getCrossForeignKeys() as $crossFK) {
+				$this->crossFKs[$crossFK->getForeignTable()->getName()] = $crossFK->getRefPhpName() ?: $crossFK->getForeignTable()->getPhpName();
+			}
         }
 
         foreach ($this->getTable()->getForeignKeys() as $fk) {

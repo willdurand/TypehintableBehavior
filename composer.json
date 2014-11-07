@@ -9,8 +9,13 @@
             "email": "william.durand1@gmail.com"
         }
     ],
+	"type" : "propel-behavior",
+	"extra": {
+		"name": "typehintable",
+		"class": "TypehintableBehavior"
+	},
     "require": {
-        "propel/propel1": "~1.6"
+        "propel/propel": "2.0.*@dev"
     },
     "autoload": {
         "classmap": ["src/"]
