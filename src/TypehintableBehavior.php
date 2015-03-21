@@ -7,12 +7,18 @@
  *
  * @license    MIT License
  */
+use Propel\Generator\Builder\Om\ObjectBuilder;
+use Propel\Generator\Model\Behavior;
 
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
 class TypehintableBehavior extends Behavior
 {
+	protected $parameters = array(
+		'nullable_columns' => null,
+	);
+
     private $refFKs		= array();
 
     private $crossFKs	= array();
@@ -23,15 +29,15 @@ class TypehintableBehavior extends Behavior
 
     private $scalars    = array('array', 'callable');
 
-    public function objectMethods($builder)
+    public function objectMethods(ObjectBuilder $builder)
     {
         if (null !== $this->getParameter('nullable_columns')) {
             foreach (explode(',', $this->getParameter('nullable_columns')) as $column) {
                 $this->nullables[] = trim($column);
             }
-
-            unset($this->parameters['nullable_columns']);
         }
+
+		unset($this->parameters['nullable_columns']);
 
         foreach ($this->getParameters() as $class) {
             if (!in_array($class, $this->scalars)) {
@@ -51,8 +57,9 @@ class TypehintableBehavior extends Behavior
         }
 
         foreach ($this->getTable()->getCrossFks() as $fkList) {
-            list($refFK, $crossFK) = $fkList;
-            $this->crossFKs[$crossFK->getForeignTable()->getName()] = $crossFK->getRefPhpName() ?: $crossFK->getForeignTable()->getPhpName();
+			foreach ($fkList->getCrossForeignKeys() as $crossFK) {
+				$this->crossFKs[$crossFK->getForeignTable()->getName()] = $crossFK->getRefPhpName() ?: $crossFK->getForeignTable()->getPhpName();
+			}
         }
 
         foreach ($this->getTable()->getForeignKeys() as $fk) {

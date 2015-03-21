@@ -16,6 +16,7 @@
 class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
 {
     private $schema;
+	private $con;
 
     public function setUp()
     {
@@ -38,7 +39,7 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
         <column name="foo" type="OBJECT" />
 
         <behavior name="typehintable">
-            <parameter name="typehinted_group" value="BaseTypehintedGroup" />
+            <parameter name="typehinted_group" value="TypehintedGroup" />
             <parameter name="catched_exception" value="Exception" />
             <parameter name="foo" value="TypehintedUser" />
 
@@ -66,12 +67,7 @@ class TypehintableBehaviorTest extends \PHPUnit_Framework_TestCase
 EOF;
 
         if (!class_exists('TypehintedObject')) {
-            $builder = new PropelQuickBuilder();
-            $config  = $builder->getConfig();
-            $config->setBuildProperty('behavior.typehintable.class', __DIR__.'/../src/TypehintableBehavior');
-            $builder->setConfig($config);
-            $builder->setSchema($this->schema);
-            $builder->build();
+			$this->con = \Propel\Generator\Util\QuickBuilder::buildSchema($this->schema);
         }
     }
 
@@ -134,7 +130,7 @@ EOF;
         $ref = new ReflectionClass('TypehintedUser');
         $parameters = $ref->getMethod('removeTypehintedGroup')->getParameters();
 
-        $this->assertEquals('BaseTypehintedGroup', $parameters[0]->getClass()->getName());
+        $this->assertEquals('Base\TypehintedGroup', $parameters[0]->getClass()->getName());
     }
 
     public function testTypehintIsNullable()
@@ -156,6 +152,6 @@ EOF;
         $xml = new DOMDocument();
         $xml->loadXML($this->schema);
 
-        $this->assertTrue($xml->schemaValidate(__DIR__ . '/../vendor/propel/propel1/generator/resources/xsd/database.xsd'));
+        $this->assertTrue($xml->schemaValidate(__DIR__ . '/../vendor/propel/propel/resources/xsd/database.xsd'));
     }
 }
