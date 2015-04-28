@@ -1,12 +1,37 @@
 language: php
 
 php:
-    - 5.3.3
-    - 5.3
-    - 5.4
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+  - nightly
+
+env:
+  - PROPEL1_VERSION=1.7.*
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.3
+      env: PROPEL1_VERSION="~1.6,>=1.6.6" COMPOSER_FLAGS="--prefer-lowest"
+    - php: 5.6
+      env: PROPEL1_VERSION=1.6.*
+    - php: 5.6
+      env: PROPEL1_VERSION=1.7.*
+  allow_failures:
+    - php: hhvm
+    - php: nightly
+
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
 
 before_script:
-    - curl -s http://getcomposer.org/installer | php
-    - php composer.phar install --dev --prefer-source
+  - composer selfupdate
+  - composer require "propel/propel1:${PROPEL1_VERSION}" --no-update
+  - composer update --prefer-dist --no-interaction $COMPOSER_FLAGS
 
-script: phpunit --coverage-text
+phpunit: phpunit --coverage-text
